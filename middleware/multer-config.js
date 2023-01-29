@@ -1,5 +1,4 @@
 const multer = require('multer');
-// const { ModuleKind } = require('typescript');
 
 const MIME_TYPES = {
   'image/jpg': 'jpg',
