@@ -1,30 +1,5 @@
 const Sauce = require('../models/sauce');
 
-// exports.createSauce = (req, res, next) => {
-//   const sauce = new Sauce({
-//     name: req.body.name,
-//     manufacturer: req.body.manufacturer,
-//     description: req.body.description,
-//     imageUrl: req.body.imageUrl,
-//     mainPepper: req.body.mainPepper,
-//     heat: req.body.heat,
-//     userId: req.body.userId
-//   });
-//   sauce.save().then(
-//     () => {
-//       res.status(201).json({
-//         message: 'Post saved successfully !'
-//       });
-//     }
-//   ).catch(
-//     (error) => {
-//       res.status(400).json({
-//         error: error
-//       });
-//     }
-//   );
-// };
-
 exports.createSauce = (req, res, next) => {
   const sauceObject = JSON.parse(req.body.sauce);
   delete sauceObject._id;
@@ -35,8 +10,8 @@ exports.createSauce = (req, res, next) => {
     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
     likes: 0,
     dislikes: 0,
-    usersLiked: 0,
-    usersDisliked: 0
+    usersLiked: [],
+    usersDisliked: []
   });
 
   sauce.save()
@@ -62,3 +37,9 @@ exports.getAllSauces = (req, res, next) => {
     }
   );
 };
+
+exports.getOneSauce = (req, res, next) => {
+  Sauce.findOne({ _id: req.params.id })
+  .then(sauce => res.status(200).json(sauce))
+  .catch(error => res.status(404).json({ error }));
+}
