@@ -2,9 +2,9 @@ const multer = require('multer');
 // const { ModuleKind } = require('typescript');
 
 const MIME_TYPES = {
-  'images/jpg': 'jpg',
-  'images/jpeg': 'jpeg',
-  'images/png': 'png'  
+  'image/jpg': 'jpg',
+  'image/jpeg': 'jpeg',
+  'image/png': 'png'  
 };
 
 const storage = multer.diskStorage({
@@ -18,4 +18,4 @@ const storage = multer.diskStorage({
   }
 });
 
-module.exports = multer({storage: storage}).single();
+module.exports = multer({storage: storage}).single('image');
