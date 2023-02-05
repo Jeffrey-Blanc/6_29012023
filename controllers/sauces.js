@@ -71,7 +71,7 @@ exports.deleteSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
   .then(sauce => {
     if (sauce.userId != req.auth.userId) {
-      res.status(401).json({ message: 'Not authorized' });
+      res.status(403).json({ message: 'Not authorized' });
     } else { 
       const filename = sauce.imageUrl.split('/images/')[1];
       fs.unlink(`images/${filename}`, () => {
@@ -80,8 +80,52 @@ exports.deleteSauce = (req, res, next) => {
         .catch(error => res.status(401).json({ error }));
       });
     }
+
   })
   .catch( error => {
     res.status(500).json({ error });
   });
+}
+
+exports.appreciationSauce = (req, res, next) => {
+  Sauce.findOne({ _id: req.params.id })
+  .then(sauce => {
+    const userId = req.auth.userId;
+    const bodyLike = req.body.like;
+
+    if (bodyLike === 1) {
+      if (!sauce.usersLiked.includes(userId)){     
+        sauce.likes++;
+        sauce.usersLiked.push(userId);
+        sauce.save()
+        .then(() => res.status(200).json({message: 'Add like sauce'}))
+        .catch(error => res.status(401).json({ error }));
+      } 
+    } else if (bodyLike === 0) { 
+      if (sauce.usersLiked.includes(userId)) {
+        let indiceUsersLiked = sauce.usersLiked.indexOf(userId);
+        sauce.usersLiked = sauce.usersLiked.splice(sauce.usersLiked, indiceUsersLiked);
+        sauce.likes--;
+        sauce.save()
+        .then(() => res.status(200).json({message: 'Remove like sauce'}))
+        .catch(error => res.status(401).json({ error }));
+      } else if (sauce.usersDisliked.includes(userId)){
+        let indiceUsersDisliked = sauce.usersDisliked.indexOf(userId);
+        sauce.usersDisliked = sauce.usersDisliked.splice(sauce.usersDisliked, indiceUsersDisliked);
+        sauce.dislikes--;
+        sauce.save()
+        .then(() => res.status(200).json({message: 'Remove disliked sauce'}))
+        .catch(error => res.status(401).json({ error }));
+      }
+    } else if (bodyLike < 0) {
+      if (!sauce.usersDisliked.includes(userId)){
+        sauce.usersDisliked.push(userId);
+        sauce.dislikes++;
+        sauce.save()
+        .then(() => res.status(200).json({message: 'Add disliked sauce'}))
+        .catch(error => res.status(401).json({ error }));
+      } 
+    }
+  })
+  .catch(error => res.status(404).json({ error }));
 }
