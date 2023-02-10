@@ -55,7 +55,7 @@ exports.modifySauce = (req, res, next) => {
   Sauce.findOne({_id: req.params.id})
   .then((sauce) => {
     if (sauce.userId != req.auth.userId) {
-      res.status(401).json({ message: 'Not authorized'});
+      res.status(403).json({ message: 'unauthorized request'});
     } else {
       Sauce.updateOne({ _id: req.params.id}, { ...sauceObject, _id: req.params.id })
       .then(() => res.status(200).json({message: 'Sauce modified'}))
@@ -71,7 +71,7 @@ exports.deleteSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
   .then(sauce => {
     if (sauce.userId != req.auth.userId) {
-      res.status(403).json({ message: 'Not authorized' });
+      res.status(403).json({ message: 'unauthorized request' });
     } else { 
       const filename = sauce.imageUrl.split('/images/')[1];
       fs.unlink(`images/${filename}`, () => {
@@ -104,14 +104,14 @@ exports.appreciationSauce = (req, res, next) => {
     } else if (bodyLike === 0) { 
       if (sauce.usersLiked.includes(userId)) {
         let indiceUsersLiked = sauce.usersLiked.indexOf(userId);
-        sauce.usersLiked = sauce.usersLiked.splice(sauce.usersLiked, indiceUsersLiked);
+        sauce.usersLiked.splice(indiceUsersLiked, 1);
         sauce.likes--;
         sauce.save()
         .then(() => res.status(200).json({message: 'Remove like sauce'}))
         .catch(error => res.status(401).json({ error }));
       } else if (sauce.usersDisliked.includes(userId)){
         let indiceUsersDisliked = sauce.usersDisliked.indexOf(userId);
-        sauce.usersDisliked = sauce.usersDisliked.splice(sauce.usersDisliked, indiceUsersDisliked);
+        sauce.usersDisliked.splice(indiceUsersDisliked, 1);
         sauce.dislikes--;
         sauce.save()
         .then(() => res.status(200).json({message: 'Remove disliked sauce'}))
