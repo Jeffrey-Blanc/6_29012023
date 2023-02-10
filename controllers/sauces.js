@@ -21,7 +21,7 @@ exports.createSauce = (req, res, next) => {
     res.status(201).json({message: 'Sauce saved !'})
   })
   .catch (error => {
-    res.status(400).json({ error })
+    res.status(500).json({ error })
   })
 };
 
@@ -33,7 +33,7 @@ exports.getAllSauces = (req, res, next) => {
     }
   ).catch(
     (error) => {
-      res.status(400).json({
+      res.status(500).json({
         error: error
       });
     }
@@ -59,11 +59,11 @@ exports.modifySauce = (req, res, next) => {
     } else {
       Sauce.updateOne({ _id: req.params.id}, { ...sauceObject, _id: req.params.id })
       .then(() => res.status(200).json({message: 'Sauce modified'}))
-      .catch(error => res.status(401).json({ error }));
+      .catch(error => res.status(500).json({ error }));
     }
   })
   .catch((error) => {
-    res.status(400).json({ error });
+    res.status(404).json({ error });
   });
 }
 
@@ -77,13 +77,13 @@ exports.deleteSauce = (req, res, next) => {
       fs.unlink(`images/${filename}`, () => {
         Sauce.deleteOne({ _id: req.params.id })
         .then(() => { res.status(200).json({message: 'Sauce deleted'})})
-        .catch(error => res.status(401).json({ error }));
+        .catch(error => res.status(500).json({ error }));
       });
     }
 
   })
   .catch( error => {
-    res.status(500).json({ error });
+    res.status(404).json({ error });
   });
 }
 
@@ -99,7 +99,7 @@ exports.appreciationSauce = (req, res, next) => {
         sauce.usersLiked.push(userId);
         sauce.save()
         .then(() => res.status(200).json({message: 'Add like sauce'}))
-        .catch(error => res.status(401).json({ error }));
+        .catch(error => res.status(500).json({ error }));
       } 
     } else if (bodyLike === 0) { 
       if (sauce.usersLiked.includes(userId)) {
@@ -108,14 +108,14 @@ exports.appreciationSauce = (req, res, next) => {
         sauce.likes--;
         sauce.save()
         .then(() => res.status(200).json({message: 'Remove like sauce'}))
-        .catch(error => res.status(401).json({ error }));
+        .catch(error => res.status(500).json({ error }));
       } else if (sauce.usersDisliked.includes(userId)){
         let indiceUsersDisliked = sauce.usersDisliked.indexOf(userId);
         sauce.usersDisliked.splice(indiceUsersDisliked, 1);
         sauce.dislikes--;
         sauce.save()
         .then(() => res.status(200).json({message: 'Remove disliked sauce'}))
-        .catch(error => res.status(401).json({ error }));
+        .catch(error => res.status(500).json({ error }));
       }
     } else if (bodyLike < 0) {
       if (!sauce.usersDisliked.includes(userId)){
@@ -123,7 +123,7 @@ exports.appreciationSauce = (req, res, next) => {
         sauce.dislikes++;
         sauce.save()
         .then(() => res.status(200).json({message: 'Add disliked sauce'}))
-        .catch(error => res.status(401).json({ error }));
+        .catch(error => res.status(500).json({ error }));
       } 
     }
   })
