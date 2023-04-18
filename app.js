@@ -3,11 +3,17 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
 
+const dotenv = require("dotenv");
+dotenv.config();
+
+const ID_API = process.env.ID_API;
+const PASSWORD_API = process.env.PASSWORD_API;
+
 
 const userRoutes = require('./routes/user');
 const sauceRoutes = require('./routes/sauces');
 
-mongoose.connect('mongodb+srv://HotTakes:HotTakesPassword@cluster0.fe2ptaj.mongodb.net/?retryWrites=true&w=majority',
+mongoose.connect('mongodb+srv://' + ID_API + ':' + PASSWORD_API + '@cluster0.fe2ptaj.mongodb.net/?retryWrites=true&w=majority',
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
